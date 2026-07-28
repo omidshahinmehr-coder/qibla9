@@ -34,16 +34,14 @@ import java.util.*
 
 /* -------------------- رنگ‌های پریمیوم -------------------- */
 
-private val bgColor = ColorProvider(Color(0xFFF7EFE3)) // کرم روشن لوکس
-private val cellBorderColor = ColorProvider(Color(0xFFCBB88A)) // طلایی گرم‌تر
-private val cellFillColor = ColorProvider(Color(0xFFFBF6EA)) // کرم داخلی روشن
-private val goldText = ColorProvider(Color(0xFF7A5A22)) // طلایی تیره خوانا
-private val faintGoldText = ColorProvider(Color(0xFFB89A63)) // طلایی روشن
-
-/* -------------------- تنظیمات -------------------- */
+private val bgColor = ColorProvider(Color(0xFFF7EFE3))
+private val cellBorderColor = ColorProvider(Color(0xFFCBB88A))
+private val cellFillColor = ColorProvider(Color(0xFFFBF6EA))
+private val goldText = ColorProvider(Color(0xFF7A5A22))
+private val faintGoldText = ColorProvider(Color(0xFFB89A63))
 
 private val widgetPrayerKeys = listOf("Fajr", "Sunrise", "Dhuhr", "Sunset", "Maghrib", "Midnight")
-private val cellWidth = 72.dp // سلول‌ها کمی بزرگ‌تر برای خوانایی بهتر
+private val cellWidth = 72.dp
 
 class QiblaWidget : GlanceAppWidget() {
 override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -64,11 +62,12 @@ Column(
 modifier = GlanceModifier
 .fillMaxSize()
 .background(bgColor)
-.cornerRadius(24.dp) // گوشه‌های نرم‌تر
+.cornerRadius(24.dp)
 .padding(14.dp)
 .clickable(actionStartActivity<MainActivity>()),
 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
 ) {
+
 if (snapshot != null) {
 
 val countdown = nextPrayerCountdown(snapshot.timings)
@@ -78,66 +77,68 @@ val jalaliWithWeekday = listOf(weekdayName, snapshot.jalaliText)
 .filter { it.isNotBlank() }
 .joinToString(" ")
 
-AndroidRemoteViews(RemoteViews(langContext.packageName, R.layout.widget_clock))
+/* -------------------- ساعت (اصلاح‌شده) -------------------- */
+Box(
+modifier = GlanceModifier
+.fillMaxWidth()
+.height(40.dp)
+) {
+AndroidRemoteViews(
+RemoteViews(langContext.packageName, R.layout.widget_clock)
+)
+}
 
 Spacer(modifier = GlanceModifier.height(6.dp))
 
 Text(
 text = jalaliWithWeekday,
-style = TextStyle(
-color = goldText,
-fontSize = 13.sp,
-fontWeight = FontWeight.Bold,
-textAlign = TextAlign.Center
-)
+style = TextStyle(color = goldText, fontSize = 13.sp, fontWeight = FontWeight.Bold)
 )
 
 Spacer(modifier = GlanceModifier.height(6.dp))
 
 Text(
 text = "gregorianText",
-style = TextStyle(
-color = faintGoldText,
-fontSize = 12.sp,
-textAlign = TextAlign.Center
-)
+style = TextStyle(color = faintGoldText, fontSize = 12.sp)
 )
 
 Spacer(modifier = GlanceModifier.height(10.dp))
 
+/* -------------------- شمارش معکوس (اصلاح‌شده) -------------------- */
 if (countdown != null) {
+
 Text(
 text = langContext.getString(
 R.string.widget_countdown_label,
 labels[countdown.first] ?: countdown.first,
 snapshot.cityName
 ),
-style = TextStyle(
-color = goldText,
-fontSize = 12.sp,
-fontWeight = FontWeight.Bold,
-textAlign = TextAlign.Center
-)
+style = TextStyle(color = goldText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
 )
 
 Spacer(modifier = GlanceModifier.height(4.dp))
 
 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
 val nowElapsed = SystemClock.elapsedRealtime()
 val nowWall = System.currentTimeMillis()
 val base = nowElapsed + (countdown.second - nowWall)
+
 val rv = RemoteViews(langContext.packageName, R.layout.widget_countdown)
 rv.setChronometer(R.id.widget_countdown_view, base, null, true)
+
+Box(
+modifier = GlanceModifier
+.fillMaxWidth()
+.height(32.dp)
+) {
 AndroidRemoteViews(rv)
+}
+
 } else {
 Text(
 text = staticDuration(countdown.second),
-style = TextStyle(
-color = goldText,
-fontSize = 15.sp,
-fontWeight = FontWeight.Bold,
-textAlign = TextAlign.Center
-)
+style = TextStyle(color = goldText, fontSize = 15.sp, fontWeight = FontWeight.Bold)
 )
 }
 }
@@ -145,16 +146,13 @@ textAlign = TextAlign.Center
 if (snapshot.isOffline) {
 Text(
 text = langContext.getString(R.string.widget_offline_tag),
-style = TextStyle(
-color = faintGoldText,
-fontSize = 10.sp,
-textAlign = TextAlign.Center
-)
+style = TextStyle(color = faintGoldText, fontSize = 10.sp)
 )
 }
 
 Spacer(modifier = GlanceModifier.height(12.dp))
 
+/* -------------------- سلول‌های نماز -------------------- */
 Row(
 modifier = GlanceModifier.fillMaxWidth(),
 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
@@ -167,15 +165,19 @@ time = snapshot.timings[key] ?: "--:--"
 )
 }
 }
+
 } else {
+
 Text(
 text = langContext.getString(R.string.widget_updating),
-style = TextStyle(color = goldText, fontSize = 13.sp, textAlign = TextAlign.Center)
+style = TextStyle(color = goldText, fontSize = 13.sp)
 )
+
 Spacer(modifier = GlanceModifier.height(6.dp))
+
 Text(
 text = langContext.getString(R.string.widget_open_app_hint),
-style = TextStyle(color = faintGoldText, fontSize = 11.sp, textAlign = TextAlign.Center)
+style = TextStyle(color = faintGoldText, fontSize = 11.sp)
 )
 }
 }
@@ -187,7 +189,7 @@ Column(
 modifier = GlanceModifier
 .width(cellWidth)
 .background(cellBorderColor)
-.cornerRadius(18.dp) // کادر شیک‌تر
+.cornerRadius(18.dp)
 .padding(1.5.dp)
 ) {
 Column(
@@ -200,22 +202,14 @@ horizontalAlignment = Alignment.Horizontal.CenterHorizontally
 ) {
 Text(
 text = label,
-style = TextStyle(
-color = goldText,
-fontSize = 12.sp,
-fontWeight = FontWeight.Bold
-)
+style = TextStyle(color = goldText, fontSize = 12.sp, fontWeight = FontWeight.Bold)
 )
 
 Spacer(modifier = GlanceModifier.height(4.dp))
 
 Text(
 text = time,
-style = TextStyle(
-color = goldText,
-fontSize = 16.sp,
-fontWeight = FontWeight.Bold
-)
+style = TextStyle(color = goldText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
 )
 }
 }
