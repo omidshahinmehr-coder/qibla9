@@ -1,8 +1,10 @@
+
 package com.qibla.prayertimes.widget
 
 import android.content.Context
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
